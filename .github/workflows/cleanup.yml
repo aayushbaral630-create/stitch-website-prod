@@ -1,15 +1,15 @@
-name: Cleanup
+name: API Cleanup
 on: push
 jobs:
   cleanup:
       runs-on: ubuntu-latest
           steps:
-                - uses: actions/checkout@v4
-                      - name: Remove submodule
-                              run: |
-                                        git config user.name "GitHub Action"
-                                                  git config user.email "action@github.com"
-                                                            git rm -rf "stitch website" || true
-                                                                      git commit -m "Remove problematic submodule" || echo "Nothing to remove"
-                                                                                git push
-                                                                                
+                - name: Delete via API
+                        run: |
+                                  SHA=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/contents/stitch%20website?ref=main | jq -r '.sha')
+                                            if [ "$SHA" != "null" ]; then
+                                                        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d '{"message": "Remove submodule via API", "sha": "'$SHA'", "branch": "main"}' https://api.github.com/repos/${{ github.repository }}/contents/stitch%20website
+                                                                  else
+                                                                              echo "Submodule not found or already deleted"
+                                                                                        fi
+                                                                                        
