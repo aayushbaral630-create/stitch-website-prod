@@ -1,0 +1,15 @@
+name: Cleanup
+on: push
+jobs:
+  cleanup:
+      runs-on: ubuntu-latest
+          steps:
+                - uses: actions/checkout@v4
+                      - name: Remove submodule
+                              run: |
+                                        git config user.name "GitHub Action"
+                                                  git config user.email "action@github.com"
+                                                            git rm -rf "stitch website" || true
+                                                                      git commit -m "Remove problematic submodule" || echo "Nothing to remove"
+                                                                                git push
+                                                                                
